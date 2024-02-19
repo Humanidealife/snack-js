@@ -9,16 +9,16 @@ window.onload = function(){
     const centreX = canvasWidth / 2;
     const centreY = canvasHeight / 2;
     let delay;
-    // const xCoord = 0; ces deux lignes ne servent à rien. C'est le formateur qui s'est trompé. 
+    // const xCoord = 0; ces deux lignes ne servent à rien. C'est le formateur qui s'est trompé.
     // const yCoord = 0;
     let snakee;
-    let applee; 
+    let applee;
     let score;
     let timeOut;
-    
+
     init();
-    
-    function init(){    
+
+    function init(){
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
         canvas.style.border = "30px solid gray";
@@ -28,13 +28,13 @@ window.onload = function(){
         document.body.appendChild(canvas);
         launch();
     }
-    
+
     function launch(){
         snakee = new Snake([[6,4],[5,4],[4,4],[3,4],[2,4]],"right");
         applee = new Apple([10,10]);
         score = 0;
         clearTimeout(timeOut);
-        delay = 100;
+        delay = 200;
         refreshCanvas();
     }
     function refreshCanvas(){
@@ -45,12 +45,12 @@ window.onload = function(){
             if (snakee.isEatingApple(applee)){
                 score++;
                 snakee.ateApple = true;
-                
+
                 do {
-                    applee.setNewPosition(); 
+                    applee.setNewPosition();
                 } while(applee.isOnSnake(snakee));
-                
-                if(score % 5 == 0){
+
+                if(score % 3 == 0){
                     speedUp();
                 }
             }
@@ -61,11 +61,11 @@ window.onload = function(){
             timeOut = setTimeout(refreshCanvas,delay);
          }
     }
-    
+
     function speedUp(){
-        delay /= 2;
+        delay /= 1.2;
     }
-    
+
     function gameOver(){
         ctx.save();
         ctx.font = "bold 70px sans-serif";
@@ -81,7 +81,7 @@ window.onload = function(){
         ctx.fillText("Appuyer sur la touche Espace pour rejouer", centreX, centreY - 120);
         ctx.restore();
     }
-    
+
     function drawScore(){
         ctx.save();
         ctx.font = "bold 200px sans-serif";
@@ -91,18 +91,18 @@ window.onload = function(){
         ctx.fillText(score.toString(), centreX, centreY);
         ctx.restore();
     }
-    
+
     function drawBlock(ctx, position){
         const x = position[0]*blockSize; //les deux variables x et y sont uniquement utiles ici, donc on les garde là.
         const y = position[1]*blockSize;
         ctx.fillRect(x,y,blockSize,blockSize);
     }
-    
+
     function Snake(body, direction){
         this.body = body;
         this.direction = direction;
         this.ateApple = false;
-        
+
         this.draw = function(){
             ctx.save();
             ctx.fillStyle="#ff0000";
@@ -111,9 +111,9 @@ window.onload = function(){
             }
             ctx.restore();
         };
-        
+
         this.advance = function(){
-            const nextPosition = this.body[0].slice();//nextPosition est un "array", ici on ne change qu'une partie de ce "array", mais pas de sa totalité. On peut en effet bien garder le "const".C'est-à-dire il y a juste un changement de la valeur existante. 
+            const nextPosition = this.body[0].slice();//nextPosition est un "array", ici on ne change qu'une partie de ce "array", mais pas de sa totalité. On peut en effet bien garder le "const".C'est-à-dire il y a juste un changement de la valeur existante.
             switch(this.direction){
                 case "left":
                     nextPosition[0] -= 1;
@@ -136,7 +136,7 @@ window.onload = function(){
             else
                 this.ateApple = false;
         };
-        
+
         this.setDirection = function(newDirection){
             let allowedDirections;
             switch(this.direction){
@@ -147,7 +147,7 @@ window.onload = function(){
                 case "down":
                 case "up":
                     allowedDirections=["left","right"];
-                    break;  
+                    break;
                default:
                     throw("invalid direction");
             }
@@ -155,7 +155,7 @@ window.onload = function(){
                 this.direction = newDirection;
             }
         };
-        
+
         this.checkCollision = function(){
             let wallCollision = false;
             let snakeCollision = false;
@@ -169,18 +169,18 @@ window.onload = function(){
             const maxY = heightInBlocks - 1;
             const isNotBetweenHorizontalWalls = snakeX < minX || snakeX > maxX;
             const isNotBetweenVerticalWalls = snakeY < minY || snakeY > maxY;
-            
+
             if (isNotBetweenHorizontalWalls || isNotBetweenVerticalWalls)
                 wallCollision = true;
-            
+
             for (let i=0 ; i<rest.length ; i++){
                 if (snakeX === rest[i][0] && snakeY === rest[i][1])
                     snakeCollision = true;
             }
-            
-            return wallCollision || snakeCollision;        
+
+            return wallCollision || snakeCollision;
         };
-        
+
         this.isEatingApple = function(appleToEat){
             const head = this.body[0];
             if (head[0] === appleToEat.position[0] && head[1] === appleToEat.position[1])
@@ -188,12 +188,12 @@ window.onload = function(){
             else
                 return false;
         }
-        
+
     }
-    
+
     function Apple(position){
         this.position = position;
-        
+
         this.draw = function(){
           const radius = blockSize/2;
           const x = this.position[0]*blockSize + radius;
@@ -205,25 +205,25 @@ window.onload = function(){
           ctx.fill();
           ctx.restore();
         };
-        
+
         this.setNewPosition = function(){
             const newX = Math.round(Math.random()*(widthInBlocks-1));
             const newY = Math.round(Math.random()*(heightInBlocks-1));
             this.position = [newX,newY];
-        }; 
-        
+        };
+
         this.isOnSnake = function(snakeToCheck){
             let isOnSnake = false;
             for (let i=0 ; i < snakeToCheck.body.length ; i++){
                 if(this.position[0] === snakeToCheck.body[i][0] && this.position[1] === snakeToCheck.body[i][1]){
-                    isOnSnake = true;     
+                    isOnSnake = true;
                 }
             }
             return isOnSnake;
         };
 
     }
-    
+
     document.onkeydown = function handleKeyDown(e){
         const key = e.keyCode;
         let newDirection;
@@ -249,4 +249,3 @@ window.onload = function(){
         snakee.setDirection(newDirection);
     };
 }
-
